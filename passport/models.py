@@ -4,7 +4,6 @@ from django.db import models
 
 class User(AbstractUser):
     face = models.ImageField(upload_to='face_of_user/%Y/%m/%d/', blank=True, null=True,
-                             default='Нет картинки',
                              verbose_name='Лицо')
     date_of_birthday = models.DateField(verbose_name='Дата рождения', blank=True, null=True, )
     city = models.CharField(max_length=100, verbose_name='Город проживания', blank=True, null=True, )

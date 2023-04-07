@@ -36,12 +36,14 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'passport.apps.PassportConfig',
-    'allauth',
-    'allauth.account',
-    'allauth.socialaccount',
-    'allauth.socialaccount.providers.google',
-    'allauth.socialaccount.providers.vk',
-    'allauth.socialaccount.providers.yandex'
+    'social_django',
+    # 'django.contrib.sites',
+    # 'allauth',
+    # 'allauth.account',
+    # 'allauth.socialaccount',
+    # 'allauth.socialaccount.providers.google',
+    # 'allauth.socialaccount.providers.vk',
+    # 'allauth.socialaccount.providers.yandex'
 ]
 
 MIDDLEWARE = [
@@ -69,6 +71,8 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'social_django.context_processors.backends',
+                'social_django.context_processors.login_redirect',
             ],
         },
     },
@@ -88,12 +92,11 @@ DATABASES = {
 
 AUTHENTICATION_BACKENDS = (
     "django.contrib.auth.backends.ModelBackend",
-    "allauth.account.auth_backends.AuthenticationBackend",
+    # "allauth.account.auth_backends.AuthenticationBackend",
+    'social_core.backends.google.GoogleOAuth2',
+    'social_core.backends.vk.VKOAuth2',
+    'social_core.backends.yandex.YandexOAuth2',
 )
-
-SITE_ID = 1
-
-# AUTH_USER_MODEL = 'accounts.CustomUser'
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
@@ -127,6 +130,7 @@ USE_TZ = True
 AUTH_USER_MODEL = 'passport.User'
 
 LOGIN_REDIRECT_URL = '/'
+LOGIN_URL = 'register/'
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
@@ -142,14 +146,38 @@ STATICFILES_DIRS = [
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-SOCIALACCOUNT_PROVIDERS = {
-    'google': {
-        'SCOPE': [
-            'profile',
-            'email',
-        ],
-        'AUTH_PARAMS': {
-            'access_type': 'online',
-        }
-    }
-}
+SOCIAL_AUTH_PIPELINE = [
+    'social_core.pipeline.social_auth.social_details',
+    'social_core.pipeline.social_auth.social_uid',
+    'social_core.pipeline.social_auth.auth_allowed',
+    'social_core.pipeline.social_auth.social_user',
+    'social_core.pipeline.user.get_username',
+    'social_core.pipeline.user.create_user',
+    'social_core.pipeline.social_auth.associate_user',
+    'social_core.pipeline.social_auth.load_extra_data',
+    'social_core.pipeline.user.user_details'
+]
+SOCIAL_AUTH_URL_NAMESPACE = 'social'
+
+GOOGLE_CLIENT_ID = '138825329908-j35i9u405g5e6od8a7ddq8idn87btr5p.apps.googleusercontent.com'
+GOOGLE_CLIENT_SECRET = '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'
+SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = GOOGLE_CLIENT_ID
+SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = GOOGLE_CLIENT_SECRET
+SOCIAL_AUTH_GOOGLE_OAUTH2_AUTH_EXTRA_ARGUMENTS = {'access_type': 'offline'}
+SOCIAL_AUTH_GOOGLE_OAUTH2_SCOPE = ['https://www.googleapis.com/auth/userinfo.email',
+                                   'https://www.googleapis.com/auth/userinfo.profile']
+
+VK_CLIENT_ID = '51607408 '
+VK_CLIENT_SECRET = 'rMpa2XAaXvJHxP2eTurS'
+VK_REDIRECT_URI = 'http://127.0.0.1:8000/accounts/vk/login/callback/'
+
+YANDEX_CLIENT_ID = '5cb61cd7eaad4e6f89a50ac0d4a887f5'
+YANDEX_CLIENT_SECRET = 'b98a3915af2440dc80dccae322556f85'
+YANDEX_REDIRECT_URI = 'http://127.0.0.1:8000/accounts/yandex/login/callback/'
+
+
+SOCIAL_AUTH_VK_OAUTH2_KEY = VK_CLIENT_ID
+SOCIAL_AUTH_VK_OAUTH2_SECRET = VK_CLIENT_SECRET
+
+SOCIAL_AUTH_YANDEX_OAUTH2_KEY = YANDEX_CLIENT_ID
+SOCIAL_AUTH_YANDEX_OAUTH2_SECRET = YANDEX_CLIENT_SECRET
