@@ -9,4 +9,4 @@ class User(AbstractUser):
     address = models.CharField(max_length=255, verbose_name='Адрес проживания', blank=True, null=True, )
     number_of_phone = models.CharField(max_length=50, verbose_name='Номер телфона', blank=True, null=True, )
     _hash = models.CharField(max_length=200, verbose_name='Хэш предыдущего блока', blank=True, null=True, )
-    temporary_field_key_aes = models.CharField(max_length=200, verbose_name='key', blank=True, null=True, )
+    # temporary_field_key_aes = models.CharField(max_length=200, verbose_name='key', blank=True, null=True, )

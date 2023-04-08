@@ -12,7 +12,10 @@ import pyotp
 from django.core.mail import send_mail
 from .blockchain import get_hash, _check_blockchain
 from .RSA_AES import Aes
-
+from requests import get, post
+from datetime import date
+import datetime
+from dateutil import relativedelta
 otp_dict = {}
 otp_secret = {}
 
@@ -36,7 +39,33 @@ def auth(request, backend):
 
 @login_required
 def personal_cabinet(request):
-    return render(request, 'passport/personal_cabinet.html')
+    data = User.objects.get(pk=request.user.pk)
+    aes = Aes()
+    key = get(f'http://127.0.0.1:5000/get_key/{request.user.pk}').json()['key']
+
+    today = date.today()
+    birthday = datetime.datetime.strptime(aes.dec_aes(data.date_of_birthday, key[0]), '%d.%m.%Y')
+    date_diff = relativedelta.relativedelta(today, birthday)
+    years = date_diff.years  # 23
+
+
+    dict_data = {
+        'date_of_birthday': aes.dec_aes(data.date_of_birthday, key[0]),
+        'number_of_phone': aes.dec_aes(data.number_of_phone, key[0]),
+        'city': aes.dec_aes(data.city, key[0]),
+        'address': aes.dec_aes(data.address, key[0]),
+        'last_login': data.last_login,
+        'first_name': data.first_name,
+        'last_name': data.last_name,
+        'email': data.email,
+        'data_joined': data.date_joined,
+        'years': years,
+        'hash': data._hash
+    }
+
+
+
+    return render(request, 'passport/personal_cabinet.html', {'dict_data': dict_data})
 
 
 def register(request):
@@ -71,7 +100,8 @@ def add_personal_data(request):
             user_instance.address = address
 
             # ЗАМЕНИТЬ НА ПОЛУЧЕНИЕ КЛЮЧА ИЗ ДРУГОЙ БАЗЫ
-            user_instance.temporary_field_key_aes = key_aes
+            post('http://127.0.0.1:5000/post_key', json={'id': request.user.pk, 'key': key_aes})
+            # user_instance.temporary_field_key_aes = key_aes
 
             user_instance._hash = get_hash(date_of_birthday, number_of_phone, city, address,
                                            user_previous._hash)
@@ -89,15 +119,39 @@ def send_otp(request):
             cd = form.cleaned_data
             confirm_password = cd.pop('confirm_password')
             if cd['password'] == confirm_password:
-                user = User.objects.create_user(**cd)
+                aes = Aes()
+                user_previous = User.objects.all().order_by('-id')[0]
+
+                date_of_birthday = aes.enc_aes(str(cd['date_of_birthday']))
+                number_of_phone = aes.enc_aes(str(cd['number_of_phone']))
+                city = aes.enc_aes(cd['city'])
+                address = aes.enc_aes(cd['address'])
+                # ЗАМЕНИТЬ НА ПОЛУЧЕНИЕ КЛЮЧА ИЗ ДРУГОЙ БАЗЫ
+                post('http://127.0.0.1:5000/post_key', json={'id': user_previous.pk + 1, 'key': aes.print_key()})
+                # # user_instance.temporary_field_key_aes = key_aes
+                #
+                # user_instance._hash = get_hash(date_of_birthday, number_of_phone, city, address,
+                #                                user_previous._hash)
+                #
+                print(cd)
+                user = User.objects.create_user(
+                    first_name=cd['first_name'],
+                    last_name=cd['last_name'],
+                    password=cd['password'],
+                    email=cd['email'],
+                    number_of_phone=number_of_phone,
+                    date_of_birthday=date_of_birthday,
+                    city=city,
+                    address=address,
+                    username=cd['username'],
+                    _hash=get_hash(date_of_birthday, number_of_phone, city, address, user_previous._hash)
+                )
             key = otp_secret.get(cd['email'], None)
             if key is None:
                 key = pyotp.random_base32(40)
 
-            print(key)
             totp = pyotp.TOTP(key, interval=300)
             token = totp.now()
-            print(token)
 
             otp_dict[cd['email']] = token
 
@@ -119,7 +173,6 @@ def login_with_otp(request):
             email = next(ch for ch, code in otp_dict.items() if code == token)
             login(request, User.objects.get(email=email), backend='django.contrib.auth.backends.ModelBackend')
             otp_dict.pop(email)
-            print(otp_dict)
             return redirect('personal_cabinet')
         else:
             return HttpResponse('Invalid token.')

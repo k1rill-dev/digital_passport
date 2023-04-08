@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 import json
 import os
 import hashlib
@@ -57,7 +59,7 @@ def get_integrity(id_sender, id_receiver):
         #     res = True
         # elif ((list_msg[i].sender_id == int(id_sender) and list_msg[i].receiver_id == int(id_receiver)) or (
         #         list_msg[i].sender_id == int(id_receiver) and list_msg[i].receiver_id == int(id_sender))):
-        #     print('не нашеееееееееееееееееееееееееееееееееее')
+        #     print('РЅРµ РЅР°С€РµРµРµРµРµРµРµРµРµРµРµРµРµРµРµРµРµРµРµРµРµРµРµРµРµРµРµРµРµРµРµРµРµРµРµ')
         list1.append({'text_msg': list_new[i - 1], 'change_bool': res})
     return list1
 
@@ -86,3 +88,7 @@ def write_block(name, amount, to_whom, prev_hash, dict_info):
 #                     i.sender_id == None and i.receiver_id == None):
 #                 return {'sender': name_two_person[-1].username, 'receiver': name_two_person[0].username, 'message': msg_text,
 #                         'hash_bloks': get_hash(i.message)}
+
+
+# import requests
+# print(requests.get('http://127.0.0.1:5000/post_key', json={'id': 12, 'key':"sdfsdfsdf"}).text)

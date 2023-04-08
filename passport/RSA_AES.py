@@ -114,6 +114,7 @@ class Aes:
 
 
 # aes = Aes()
+# print(aes.dec_aes('xDJy6s2esWlBZz5gZXY=','qdnfovocpcslhngkshijvsrdbowqxsnd'))
 # print(aes.enc_aes('15.07.2005'))
 # print(aes.key)
 
