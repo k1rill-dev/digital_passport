@@ -1,5 +1,11 @@
+import ast
+import io
+import json
+from PIL import Image
 from django.conf import settings
 from django.http import HttpResponse
+from django.views.decorators.csrf import csrf_exempt
+import base64
 from .forms import UpdatePersonalInfoForm, CreateUserForm
 from django.contrib.auth import logout, login
 from django.shortcuts import render, redirect
@@ -68,8 +74,8 @@ def personal_cabinet(request):
     return render(request, 'passport/personal_cabinet.html', {'dict_data': dict_data})
 
 
-def register(request):
-    return render(request, 'passport/register.html')
+def index(request):
+    return render(request, 'passport/index.html')
 
 
 def logout_user(request):
@@ -115,9 +121,11 @@ def add_personal_data(request):
 def send_otp(request):
     if request.method == 'POST':
         form = CreateUserForm(request.POST)
+        print(form.errors)
         if form.is_valid():
             cd = form.cleaned_data
             confirm_password = cd.pop('confirm_password')
+
             if cd['password'] == confirm_password:
                 aes = Aes()
                 user_previous = User.objects.all().order_by('-id')[0]
@@ -161,6 +169,8 @@ def send_otp(request):
             send_mail(subject, message, settings.EMAIL_HOST_USER, [cd['email']])
 
             return redirect('login_with_otp')
+        else:
+            return HttpResponse('не слава мэрлоу')
     else:
         form = CreateUserForm()
         return render(request, 'passport/expire_email.html', {'form': form})
@@ -168,7 +178,8 @@ def send_otp(request):
 
 def login_with_otp(request):
     if request.method == 'POST':
-        token = request.POST.get('token')
+        token = int(
+            f'{request.POST["t1"]}{request.POST["t2"]}{request.POST["t3"]}{request.POST["t4"]}{request.POST["t5"]}{request.POST["t6"]}')
         if token in otp_dict.values():
             email = next(ch for ch, code in otp_dict.items() if code == token)
             login(request, User.objects.get(email=email), backend='django.contrib.auth.backends.ModelBackend')
@@ -180,10 +191,13 @@ def login_with_otp(request):
         return render(request, 'passport/confirm_code.html')
 
 
+@csrf_exempt
 def get_biometrical_data(request):
     if request.method == 'POST':
-        ...
-    return render(request, 'passport/get_biometria.html')
+        data = ast.literal_eval(request.body.decode('utf-8'))
+        with open('img.jpeg', 'wb') as f:
+            f.write(base64.b64decode(data['img'].replace('data:image/jpeg;base64,', '')))
+    return render(request, 'passport/biometrica.html')
 
 
 def login_with_biometria(request):
