@@ -14,6 +14,8 @@
         <a href="{% url 'social:begin' 'google-oauth2' %}?next={% url 'add_personal_data' %}">Авторизоваться через Google</a>
         <a href="{% url 'social:begin' 'vk-oauth2' %}?next={% url 'add_personal_data' %}">Авторизоваться через VK</a>
         <a href="{% url 'social:begin' 'yandex-oauth2' %}?next={% url 'add_personal_data' %}">Авторизоваться через Yandex</a>
+        <p><a href="#">Авторизация по биометрии</a></p>
+        <p>Если нет камеры, то можете авторизоваться с помощью <a href="{% url 'send_otp' %}"> двухфакторной аутентификации </a></p>
     {% endif %}
 </body>
 </html>

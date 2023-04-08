@@ -1,10 +1,141 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <link rel="stylesheet" href="https://bootstraptema.ru/plugins/2015/bootstrap3/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"/>
+    <script src="https://bootstraptema.ru/plugins/jquery/jquery-1.11.3.min.js"></script>
+    <script src="https://bootstraptema.ru/plugins/2015/b-v3-3-6/bootstrap.min.js"></script>
     <meta charset="UTF-8">
     <title>Title</title>
 </head>
 <body>
-    <h1>Личный кабинет</h1>
+
+<br><br><br>
+
+<style>
+    body {
+        background: url(https://bootstraptema.ru/images/bg/bg-1.png)
+    }
+
+    #main {
+        background-color: #f2f2f2;
+        padding: 20px;
+        -webkit-border-radius: 4px;
+        -moz-border-radius: 4px;
+        -ms-border-radius: 4px;
+        -o-border-radius: 4px;
+        border-radius: 4px;
+        border-bottom: 4px solid #ddd;
+    }
+
+    #real-estates-detail #author img {
+        -webkit-border-radius: 100%;
+        -moz-border-radius: 100%;
+        -ms-border-radius: 100%;
+        -o-border-radius: 100%;
+        border-radius: 100%;
+        border: 5px solid #ecf0f1;
+        margin-bottom: 10px;
+    }
+
+    #real-estates-detail .sosmed-author i.fa {
+        width: 30px;
+        height: 30px;
+        border: 2px solid #bdc3c7;
+        color: #bdc3c7;
+        padding-top: 6px;
+        margin-top: 10px;
+    }
+
+    .panel-default .panel-heading {
+        background-color: #fff;
+    }
+
+    #real-estates-detail .slides li img {
+        height: 450px;
+    }
+</style>
+
+<div class="container">
+    <div id="main">
+
+
+        <div class="row" id="real-estates-detail">
+            <div class="col-lg-4 col-md-4 col-xs-12">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <header class="panel-title">
+                            <div class="text-center">
+                                <strong>Пользователь сайта</strong>
+                            </div>
+                        </header>
+                    </div>
+                    <div class="panel-body">
+                        <div class="text-center" id="author">
+                            <img src="https://sun9-61.userapi.com/impg/CX3az0BwoUuAwTxWXPy3Z-ayWHW5p51r3A6hWQ/gDwvOqEADN0.jpg?size=206x210&quality=96&sign=f15b7d76db7304fdc2ea419022035f0d&type=album">
+                            <h3>Владислав Каламбет</h3>
+                            <small class="label label-warning" style="margin-bottom: 90px;">Российская Федерация</small>
+                            <p style="margin-top: 10px;">Я создатель ChatGPT-6</p>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-8 col-md-8 col-xs-12">
+                <div class="panel">
+                    <div class="panel-body">
+                        <ul id="myTab" class="nav nav-pills">
+                            <li class="active"><a href="#detail" data-toggle="tab">О пользователе</a></li>
+                            <li class="active"><a href="" data-toggle="tab" style="margin-left: 50px;">Проверить
+                                целостность цепочки блокчейна</a></li>
+
+                        </ul>
+                        <div id="myTabContent" class="tab-content">
+                            <hr>
+                            <div class="tab-pane fade active in" id="detail">
+                                <h4>Информация профиля</h4>
+                                <table class="table table-th-block">
+                                    <tbody>
+                                    <tr>
+                                        <td class="active">Зарегистрирован:</td>
+{#                                        <td>{{ }}</td>#}
+                                    </tr>
+                                    <tr>
+                                        <td class="active">Последняя активность:</td>
+{#                                        <td>{{ }}</td>#}
+                                    </tr>
+                                    <tr>
+                                        <td class="active">Страна:</td>
+{#                                        <td>{{ }}</td>#}
+                                    </tr>
+                                    <tr>
+                                        <td class="active">Город:</td>
+{#                                        <td>{{ }}</td>#}
+                                    </tr>
+                                    <tr>
+                                        <td class="active">Пол:</td>
+{#                                        <td>{{ }}</td>#}
+                                    </tr>
+                                    <tr>
+                                        <td class="active">Полных лет:</td>
+{#                                        <td>{{ }}</td>#}
+                                    </tr>
+                                    <tr>
+                                        <td class="active">Семейное положение:</td>
+{#                                        <td>{{ }}</td>#}
+                                    </tr>
+
+                                    <tr>
+                                        <td>
+                                            <a href="https://bootstraptema.ru/stuff/plugins_bootstrap/improvement/bootstrap_star_rating/12-1-0-73"
+                                               target="_blank"></a></td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+
+
+                        </div><!-- /.main -->
+                    </div><!-- /.container -->
 </body>
 </html>

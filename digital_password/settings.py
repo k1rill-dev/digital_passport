@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 import os
 from pathlib import Path
 import environ
+
 env = environ.Env()
 environ.Env.read_env()
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -39,13 +40,6 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'passport.apps.PassportConfig',
     'social_django',
-    # 'django.contrib.sites',
-    # 'allauth',
-    # 'allauth.account',
-    # 'allauth.socialaccount',
-    # 'allauth.socialaccount.providers.google',
-    # 'allauth.socialaccount.providers.vk',
-    # 'allauth.socialaccount.providers.yandex'
 ]
 
 MIDDLEWARE = [
@@ -94,7 +88,6 @@ DATABASES = {
 
 AUTHENTICATION_BACKENDS = (
     "django.contrib.auth.backends.ModelBackend",
-    # "allauth.account.auth_backends.AuthenticationBackend",
     'social_core.backends.google.GoogleOAuth2',
     'social_core.backends.vk.VKOAuth2',
     'social_core.backends.yandex.YandexOAuth2',
@@ -177,9 +170,14 @@ YANDEX_CLIENT_ID = env('YANDEX_CLIENT_ID')
 YANDEX_CLIENT_SECRET = env('YANDEX_CLIENT_SECRET')
 YANDEX_REDIRECT_URI = 'http://127.0.0.1:8000/accounts/yandex/login/callback/'
 
-
 SOCIAL_AUTH_VK_OAUTH2_KEY = VK_CLIENT_ID
 SOCIAL_AUTH_VK_OAUTH2_SECRET = VK_CLIENT_SECRET
 
 SOCIAL_AUTH_YANDEX_OAUTH2_KEY = YANDEX_CLIENT_ID
 SOCIAL_AUTH_YANDEX_OAUTH2_SECRET = YANDEX_CLIENT_SECRET
+
+EMAIL_USE_TLS = True
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST_USER = env('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD')
+EMAIL_PORT = 587

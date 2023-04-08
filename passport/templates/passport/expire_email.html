@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <form method="post">
+        {% csrf_token %}
+        {% for field in form %}
+            <label id="{{ field.id_for_label }}">{{ field.label }}</label>
+            <div>
+                {{ field.as_widget }}
+            </div>
+            {% if field.help_text %}
+                <small id="{{ field.id_for_label }}-help" class="form-text text-muted">{{ field.help_text|safe }}</small>
+            {% endif %}
+        {% endfor %}
+        {#        <br>#}
+{##}
+{#        {{ form.username }}#}
+{#        <br>#}
+{##}
+{#        {{ form.first_name }}#}
+{#        <br>#}
+{##}
+{#        {{ form.last_name }}#}
+{#        <br>#}
+{##}
+{#        {{ form.email }}#}
+{#        <br>#}
+{##}
+{#        {{ form.number_of_phone }}#}
+{#        <br>#}
+{##}
+{#        {{ form.date_of_birthday }}#}
+{#        <br>#}
+{##}
+{#        {{ form.city }}#}
+{#        <br>#}
+{##}
+{#        {{ form.address }}#}
+{#        <br>#}
+{##}
+{#        {{ form.password }}#}
+{#        <br>#}
+{##}
+{#        {{ form.confirm_password }}#}
+{#        <br><br>#}
+
+        <button type="submit">Отправить код подтверждения</button>
+    </form>
+</body>
+</html>
