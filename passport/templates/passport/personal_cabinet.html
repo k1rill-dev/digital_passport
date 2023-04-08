@@ -73,9 +73,9 @@
                     <div class="panel-body">
                         <div class="text-center" id="author">
                             <img src="https://sun9-61.userapi.com/impg/CX3az0BwoUuAwTxWXPy3Z-ayWHW5p51r3A6hWQ/gDwvOqEADN0.jpg?size=206x210&quality=96&sign=f15b7d76db7304fdc2ea419022035f0d&type=album">
-                            <h3>Владислав Каламбет</h3>
-                            <small class="label label-warning" style="margin-bottom: 90px;">Российская Федерация</small>
-                            <p style="margin-top: 10px;">Я создатель ChatGPT-6</p>
+                            <h3>{{dict_data.first_name}} {{dict_data.last_name}}</h3>
+<!--                            <small class="label label-warning" style="margin-bottom: 90px;">Российская Федерация</small>-->
+<!--                            <p style="margin-top: 10px;"></p>-->
                             </p>
                         </div>
                     </div>
@@ -85,8 +85,9 @@
                 <div class="panel">
                     <div class="panel-body">
                         <ul id="myTab" class="nav nav-pills">
+
                             <li class="active"><a href="#detail" data-toggle="tab">О пользователе</a></li>
-                            <li class="active"><a href="" data-toggle="tab" style="margin-left: 50px;">Проверить
+                            <li class="active"><a class="active" href="{% url 'chek_blockchain' %}" data-toggle="tab" style="margin-left: 50px;">Проверить
                                 целостность цепочки блокчейна</a></li>
 
                         </ul>
@@ -98,31 +99,35 @@
                                     <tbody>
                                     <tr>
                                         <td class="active">Зарегистрирован:</td>
-                                        {#                                        <td>{{ }}</td>#}
+                                        <td>{{ dict_data.data_joined }}</td>
                                     </tr>
                                     <tr>
                                         <td class="active">Последняя активность:</td>
-                                        {#                                        <td>{{ }}</td>#}
+                                        <td>{{ dict_data.last_login }}</td>
                                     </tr>
                                     <tr>
-                                        <td class="active">Страна:</td>
-                                        {#                                        <td>{{ }}</td>#}
+                                        <td class="active">Почта:</td>
+                                        <td>{{ dict_data.email }}</td>
                                     </tr>
                                     <tr>
                                         <td class="active">Город:</td>
-                                        {#                                        <td>{{ }}</td>#}
+                                        <td>{{ dict_data.city }}</td>
                                     </tr>
                                     <tr>
-                                        <td class="active">Пол:</td>
-                                        {#                                        <td>{{ }}</td>#}
+                                        <td class="active">Адрес:</td>
+                                        <td>{{ dict_data.address }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="active">Дата рождения:</td>
+                                        <td>{{ dict_data.date_of_birthday }}</td>
                                     </tr>
                                     <tr>
                                         <td class="active">Полных лет:</td>
-                                        {#                                        <td>{{ }}</td>#}
+                                        <td>{{ dict_data.years }}</td>
                                     </tr>
                                     <tr>
-                                        <td class="active">Семейное положение:</td>
-                                        {#                                        <td>{{ }}</td>#}
+                                        <td class="active">Номер телефона:</td>
+                                        <td>{{ dict_data.number_of_phone }}</td>
                                     </tr>
 
                                     <tr>

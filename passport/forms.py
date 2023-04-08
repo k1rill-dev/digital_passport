@@ -13,6 +13,7 @@ class UpdatePersonalInfoForm(forms.Form):
     number_of_phone = forms.IntegerField(max_value=99999999999,
                                          widget=forms.NumberInput(attrs={'class': 'form-control form-control-lg'}),
                                          label='Номер телефона')
+
     date_of_birthday = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control form-control-lg'}),
                                        label='Дата рождения')
     city = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control form-control-lg'}),
