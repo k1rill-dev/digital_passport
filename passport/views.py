@@ -44,7 +44,6 @@ def add_personal_data(request):
         form = UpdatePersonalInfoForm(request.POST)
         if form.is_valid():
             cd = form.cleaned_data
-            print(cd)
             user_instance = User.objects.get(pk=request.user.pk)
             if user_instance.email is None:
                 user_instance.email = cd['email']

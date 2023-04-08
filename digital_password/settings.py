@@ -11,7 +11,9 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 import os
 from pathlib import Path
-
+import environ
+env = environ.Env()
+environ.Env.read_env()
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -19,7 +21,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-k4gsdjs0!^ay_3)zeli3)3yw&+!#*fd0uno=3i5m$^2o@h7v3x'
+SECRET_KEY = env("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -159,20 +161,20 @@ SOCIAL_AUTH_PIPELINE = [
 ]
 SOCIAL_AUTH_URL_NAMESPACE = 'social'
 
-GOOGLE_CLIENT_ID = '138825329908-j35i9u405g5e6od8a7ddq8idn87btr5p.apps.googleusercontent.com'
-GOOGLE_CLIENT_SECRET = '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'
+GOOGLE_CLIENT_ID = env('GOOGLE_CLIENT_ID')
+GOOGLE_CLIENT_SECRET = env('GOOGLE_CLIENT_SECRET')
 SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = GOOGLE_CLIENT_ID
 SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = GOOGLE_CLIENT_SECRET
 SOCIAL_AUTH_GOOGLE_OAUTH2_AUTH_EXTRA_ARGUMENTS = {'access_type': 'offline'}
 SOCIAL_AUTH_GOOGLE_OAUTH2_SCOPE = ['https://www.googleapis.com/auth/userinfo.email',
                                    'https://www.googleapis.com/auth/userinfo.profile']
 
-VK_CLIENT_ID = '51607408 '
-VK_CLIENT_SECRET = 'rMpa2XAaXvJHxP2eTurS'
+VK_CLIENT_ID = env('VK_CLIENT_ID')
+VK_CLIENT_SECRET = env('VK_CLIENT_SECRET')
 VK_REDIRECT_URI = 'http://127.0.0.1:8000/accounts/vk/login/callback/'
 
-YANDEX_CLIENT_ID = '5cb61cd7eaad4e6f89a50ac0d4a887f5'
-YANDEX_CLIENT_SECRET = 'b98a3915af2440dc80dccae322556f85'
+YANDEX_CLIENT_ID = env('YANDEX_CLIENT_ID')
+YANDEX_CLIENT_SECRET = env('YANDEX_CLIENT_SECRET')
 YANDEX_REDIRECT_URI = 'http://127.0.0.1:8000/accounts/yandex/login/callback/'
 
 
