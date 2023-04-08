@@ -10,6 +10,8 @@ from social_django.utils import psa
 from .models import User
 import pyotp
 from django.core.mail import send_mail
+from .blockchain import get_hash, _check_blockchain
+from .RSA_AES import Aes
 
 otp_dict = {}
 otp_secret = {}
@@ -51,14 +53,28 @@ def add_personal_data(request):
         form = UpdatePersonalInfoForm(request.POST)
         if form.is_valid():
             cd = form.cleaned_data
+            aes = Aes()
+            key_aes = aes.print_key()
             user_instance = User.objects.get(pk=request.user.pk)
+            user_previous = User.objects.all().order_by('-id')[1]
             if user_instance.email is None:
                 user_instance.email = cd['email']
-            user_instance.date_of_birthday = cd['date_of_birthday']
-            user_instance.number_of_phone = cd['number_of_phone']
             user_instance.set_password(cd['password'])
-            user_instance.city = cd['city']
-            user_instance.address = cd['address']
+
+            date_of_birthday = aes.enc_aes(str(cd['date_of_birthday']))
+            number_of_phone = aes.enc_aes(str(cd['number_of_phone']))
+            city = aes.enc_aes(cd['city'])
+            address = aes.enc_aes(cd['address'])
+            user_instance.date_of_birthday = date_of_birthday
+            user_instance.number_of_phone = number_of_phone
+            user_instance.city = city
+            user_instance.address = address
+
+            # ЗАМЕНИТЬ НА ПОЛУЧЕНИЕ КЛЮЧА ИЗ ДРУГОЙ БАЗЫ
+            user_instance.temporary_field_key_aes = key_aes
+
+            user_instance._hash = get_hash(date_of_birthday, number_of_phone, city, address,
+                                           user_previous._hash)
             user_instance.save()
             return redirect('personal_cabinet')
     else:
@@ -119,3 +135,21 @@ def get_biometrical_data(request):
 
 def login_with_biometria(request):
     ...
+
+
+def check_blockchain(request):
+    blocks = User.objects.all()
+    # change_block
+    # for i in range(1, len(blocks)):
+    #     currentBlock = blocks[i]
+    #     prevBlock = blocks[i - 1]
+    #
+    #     if (get_hash(currentBlock.date_of_birthday, currentBlock.number_of_phone, currentBlock.city,
+    #                  currentBlock.address, prevBlock._hash) != currentBlock._hash):
+    #         return False, currentBlock
+    #
+    # return True
+
+    response = _check_blockchain(blocks)
+
+    return HttpResponse(response)

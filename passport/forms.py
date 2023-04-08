@@ -10,7 +10,7 @@ class UpdatePersonalInfoForm(forms.Form):
     number_of_phone = forms.IntegerField(max_value=99999999999,
                                          widget=forms.NumberInput(attrs={'placeholder': "Ваш номер телефона"}),
                                          label='Номер телефона')
-    date_of_birthday = forms.DateField(widget=forms.DateInput(attrs={'placeholder': "Дата рождения"}),
+    date_of_birthday = forms.CharField(widget=forms.DateInput(attrs={'placeholder': "Дата рождения"}),
                                        label='Дата рождения')
     city = forms.CharField(widget=forms.TextInput(attrs={'placeholder': "Город проживания"}), label='Город проживания')
     address = forms.CharField(widget=forms.TextInput(attrs={'placeholder': "Адрес проживания"}),
