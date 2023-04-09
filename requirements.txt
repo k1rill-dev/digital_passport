@@ -4,3 +4,5 @@ python-dateutil
 social-auth-app-django
 psycopg2
 django-environ
+django-extensions
+pyOpenSSL

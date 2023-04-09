@@ -96,7 +96,7 @@ def personal_cabinet(request):
         years = date_diff.years
         face = data.face if data.face is not None else None
         if face is not None:
-            with open(os.path.join(BASE_DIR, f'passport/static/passport/media/{request.user.username}.jpeg'), 'wb') as f:
+            with open(os.path.join(BASE_DIR, f'passport/static/passport/{request.user.username}.jpeg'), 'wb') as f:
                 f.write(base64.b64decode(data.face))
 
             img = f'{request.user.username}.jpeg'
@@ -117,21 +117,24 @@ def personal_cabinet(request):
             'hash': data._hash,
             'check': _check_blockchain(blocks)
         }
-    except Exception:
-        birthday = 'Не указан!'
+    except Exception as e:
+        print(e)
+        birthday = datetime.datetime.strptime(aes.dec_aes(data.date_of_birthday, key[0]), '%d.%m.%Y')
+        date_diff = relativedelta.relativedelta(today, birthday)
+        years = date_diff.years
         blocks = User.objects.all()
 
         dict_data = {
-            'date_of_birthday': birthday,
-            'number_of_phone': 'Не указан',
-            'city': 'Не указан',
-            'address': 'Не указан',
+            'date_of_birthday': aes.dec_aes(data.date_of_birthday, key[0]),
+            'number_of_phone': aes.dec_aes(data.number_of_phone, key[0]),
+            'city': aes.dec_aes(data.city, key[0]),
+            'address': aes.dec_aes(data.address, key[0]),
             'last_login': data.last_login,
             'first_name': data.first_name,
             'last_name': data.last_name,
             'email': data.email,
             'data_joined': data.date_joined,
-            'years': birthday,
+            'years': years,
             'hash': data._hash,
             'check': _check_blockchain(blocks)
         }
@@ -154,6 +157,7 @@ def add_personal_data(request):
         if form.is_valid():
             cd = form.cleaned_data
             aes = Aes()
+
             key_aes = aes.print_key()
             user_instance = User.objects.get(pk=request.user.pk)
             user_previous = User.objects.all().order_by('-id')[1]
@@ -169,9 +173,30 @@ def add_personal_data(request):
             user_instance.number_of_phone = number_of_phone
             user_instance.city = city
             user_instance.address = address
-
-            # ЗАМЕНИТЬ НА ПОЛУЧЕНИЕ КЛЮЧА ИЗ ДРУГОЙ БАЗЫ
+            # if ch == 1:
+            #     key123 = get(f'http://127.0.0.1:5000/get_key/{request.user.pk}').json()['key']
+            #     date_of_birthday = aes.enc_aes(str(cd['date_of_birthday']),key123)
+            #     number_of_phone = aes.enc_aes(str(cd['number_of_phone']),key123)
+            #     city = aes.enc_aes(cd['city'],key123)
+            #     address = aes.enc_aes(cd['address'],key123)
+            #     user_instance.date_of_birthday = date_of_birthday
+            #     user_instance.number_of_phone = number_of_phone
+            #     user_instance.city = city
+            #     user_instance.address = address
+            #
+            #     user_instance.is_false = False
+            # else:
+            #     date_of_birthday = aes.enc_aes(str(cd['date_of_birthday']))
+            #     number_of_phone = aes.enc_aes(str(cd['number_of_phone']))
+            #     city = aes.enc_aes(cd['city'])
+            #     address = aes.enc_aes(cd['address'])
+            #     user_instance.date_of_birthday = date_of_birthday
+            #     user_instance.number_of_phone = number_of_phone
+            #     user_instance.city = city
+            #     user_instance.address = address
             post('http://127.0.0.1:5000/post_key', json={'id': request.user.pk, 'key': key_aes})
+            # ЗАМЕНИТЬ НА ПОЛУЧЕНИЕ КЛЮЧА ИЗ ДРУГОЙ БАЗЫ
+            # post('http://127.0.0.1:5000/post_key', json={'id': request.user.pk, 'key': key_aes})
             # user_instance.temporary_field_key_aes = key_aes
 
             user_instance._hash = get_hash(date_of_birthday, number_of_phone, city, address,
