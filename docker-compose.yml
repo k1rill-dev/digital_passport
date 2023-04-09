@@ -1,0 +1,32 @@
+version: '3.9'
+services:
+  web:
+    build: .
+    command: bash -c "python manage.py makemigrations && python manage.py migrate && gunicorn --certfile=/etc/certs/localhost.crt --keyfile=/etc/certs/localhost.key digital_password.wsgi:application --bind 0.0.0.0:443"
+    container_name: digital_password
+    volumes:
+      - .:/usr/src/app/
+      - ./nginx/certs/:/etc/certs
+    expose:
+      - "443"
+  nginx:
+    image: nginx:latest
+    container_name: ng
+    ports:
+      - "443:443"
+      - "80:80"
+    volumes:
+      - ./nginx/:/etc/nginx/conf.d
+    depends_on:
+      - web
+
+  db:
+    image: postgres:12.0-alpine
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    environment:
+      - POSTGRES_USER=hello_django
+      - POSTGRES_PASSWORD=hello_django
+      - POSTGRES_DB=hello_django_dev
+volumes:
+  postgres_data:
