@@ -1,15 +1,16 @@
 import ast
-import io
-import json
 import os
 
+from django.contrib.auth.hashers import check_password
+
+from digital_password.settings import BASE_DIR
 from .utils import *
 from PIL import Image
 from django.conf import settings
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 import base64
-from .forms import UpdatePersonalInfoForm, CreateUserForm
+from .forms import UpdatePersonalInfoForm, CreateUserForm, LoginUserForm
 from django.contrib.auth import logout, login
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
@@ -47,6 +48,41 @@ def auth(request, backend):
         return redirect(reverse('login'))
 
 
+def login_2fa(request):
+    if request.method == 'POST':
+        form = LoginUserForm(request.POST)
+        if form.is_valid():
+            cd = form.cleaned_data
+            try:
+                user = User.objects.get(email=cd['email'])
+            except User.DoesNotExist:
+                return HttpResponse('Нет такого пользователя!')
+
+            key = otp_secret.get(cd['email'], None)
+            if check_password(cd['password'], user.password):
+
+                if key is None:
+                    key = pyotp.random_base32(40)
+
+                totp = pyotp.TOTP(key, interval=300)
+                token = totp.now()
+
+                otp_dict[cd['email']] = token
+
+                subject = 'Одноразовый токен для входа в систему'
+                message = f'Ваш одноразовый токен для входа в систему: {token}'
+
+                send_mail(subject, message, settings.EMAIL_HOST_USER, [cd['email']])
+
+                return redirect('login_with_otp')
+            else:
+                return HttpResponse('Неправильный пароль!')
+
+    else:
+        form = LoginUserForm()
+    return render(request, 'passport/login.html', {'form': form})
+
+
 @login_required
 def personal_cabinet(request):
     data = User.objects.get(pk=request.user.pk)
@@ -54,25 +90,51 @@ def personal_cabinet(request):
     key = get(f'http://127.0.0.1:5000/get_key/{request.user.pk}').json()['key']
 
     today = date.today()
-    birthday = datetime.datetime.strptime(aes.dec_aes(data.date_of_birthday, key[0]), '%d.%m.%Y')
-    date_diff = relativedelta.relativedelta(today, birthday)
-    years = date_diff.years  # 23
-    blocks = User.objects.all()
+    try:
+        birthday = datetime.datetime.strptime(aes.dec_aes(data.date_of_birthday, key[0]), '%d.%m.%Y')
+        date_diff = relativedelta.relativedelta(today, birthday)
+        years = date_diff.years
+        face = data.face if data.face is not None else None
+        if face is not None:
+            with open(os.path.join(BASE_DIR, f'passport/static/passport/media/{request.user.username}.jpeg'), 'wb') as f:
+                f.write(base64.b64decode(data.face))
 
-    dict_data = {
-        'date_of_birthday': aes.dec_aes(data.date_of_birthday, key[0]),
-        'number_of_phone': aes.dec_aes(data.number_of_phone, key[0]),
-        'city': aes.dec_aes(data.city, key[0]),
-        'address': aes.dec_aes(data.address, key[0]),
-        'last_login': data.last_login,
-        'first_name': data.first_name,
-        'last_name': data.last_name,
-        'email': data.email,
-        'data_joined': data.date_joined,
-        'years': years,
-        'hash': data._hash,
-        'check': _check_blockchain(blocks)
-    }
+            img = f'{request.user.username}.jpeg'
+        blocks = User.objects.all()
+
+        dict_data = {
+            'date_of_birthday': aes.dec_aes(data.date_of_birthday, key[0]),
+            'number_of_phone': aes.dec_aes(data.number_of_phone, key[0]),
+            'city': aes.dec_aes(data.city, key[0]),
+            'address': aes.dec_aes(data.address, key[0]),
+            'last_login': data.last_login,
+            'first_name': data.first_name,
+            'last_name': data.last_name,
+            'email': data.email,
+            'data_joined': data.date_joined,
+            'years': years,
+            'picture': img,
+            'hash': data._hash,
+            'check': _check_blockchain(blocks)
+        }
+    except Exception:
+        birthday = 'Не указан!'
+        blocks = User.objects.all()
+
+        dict_data = {
+            'date_of_birthday': birthday,
+            'number_of_phone': 'Не указан',
+            'city': 'Не указан',
+            'address': 'Не указан',
+            'last_login': data.last_login,
+            'first_name': data.first_name,
+            'last_name': data.last_name,
+            'email': data.email,
+            'data_joined': data.date_joined,
+            'years': birthday,
+            'hash': data._hash,
+            'check': _check_blockchain(blocks)
+        }
 
     return render(request, 'passport/personal_cabinet.html', {'dict_data': dict_data})
 
@@ -90,9 +152,6 @@ def add_personal_data(request):
     if request.method == 'POST':
         form = UpdatePersonalInfoForm(request.POST)
         if form.is_valid():
-            data = ast.literal_eval(request.body.decode('utf-8'))
-            with open('img.jpeg', 'wb') as f:
-                f.write(base64.b64decode(data['img'].replace('data:image/jpeg;base64,', '')))
             cd = form.cleaned_data
             aes = Aes()
             key_aes = aes.print_key()
@@ -101,7 +160,7 @@ def add_personal_data(request):
             if user_instance.email is None:
                 user_instance.email = cd['email']
             user_instance.set_password(cd['password'])
-
+            login(request, user_instance, backend='django.contrib.auth.backends.ModelBackend')
             date_of_birthday = aes.enc_aes(str(cd['date_of_birthday']))
             number_of_phone = aes.enc_aes(str(cd['number_of_phone']))
             city = aes.enc_aes(cd['city'])
@@ -206,11 +265,25 @@ def login_biometrical_data(request):
         data = ast.literal_eval(request.body.decode('utf-8'))
         with open('img.jpeg', 'wb') as f:
             f.write(base64.b64decode(data['img'].replace('data:image/jpeg;base64,', '')))
-        user = User.objects.get(pk=request.user.pk)
+        user = User.objects.get(username=data['username'])
         with open(f'{user.username}.jpeg', 'wb') as f:
-            f.write(user.face)
+            f.write(base64.b64decode(user.face))
         print(find_difference('img.jpeg', f'{user.username}.jpeg'))
+        if find_difference('img.jpeg', f'{user.username}.jpeg') < 1.0:
+            print('НУ ЕСТЬ ЖЕ ЕСТЬ ЖЕ')
+            login(request, user, backend='django.contrib.auth.backends.ModelBackend')
+            os.remove(f'{user.username}.jpeg')
+            os.remove(f'img.jpeg')
+            os.remove(f'imgcropped.jpeg')
+            return render(request, 'passport/biometrica.html', {'success': True})
+        else:
+            os.remove(f'{user.username}.jpeg')
+            os.remove(f'img.jpeg')
+            os.remove(f'imgcropped.jpeg')
+            return render(request, 'passport/biometrica.html', {'success': False})
+
     return render(request, 'passport/biometrica.html')
+
 
 @csrf_exempt
 def add_biometria(request):

@@ -1,6 +1,6 @@
 from django.urls import path
 from .views import personal_cabinet, logout_user, add_personal_data, login_biometrical_data, login_with_otp, \
-    send_otp, add_biometria, check_blockchain, index
+    send_otp, add_biometria, check_blockchain, index, login_2fa
 
 urlpatterns = [
     path('lk/', personal_cabinet, name='personal_cabinet'),
@@ -11,5 +11,6 @@ urlpatterns = [
     path('twofa_auth/', send_otp, name='send_otp'),
     path('add_personal_data/', add_personal_data, name='add_personal_data'),
     path('add_biometria/', add_biometria, name='add_biometria'),
+    path('login_2fa/', login_2fa, name='login_2fa'),
     path('login_biometrical_data/', login_biometrical_data, name='login_biometrical_data')
 ]

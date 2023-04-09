@@ -34,10 +34,13 @@
                       </div>
 
                         {% endfor %}
+                    <p class="text-center h5" style="margin-bottom: 50px;margin-left: 21px;">
+                        Уже есть аккаунт? <a href="{% url 'login_2fa' %}">Войти</a>
+                    </p>
                       <div class="form-check d-flex justify-content-center mb-5">
                         <input class="form-check-input me-2" type="checkbox" value="" id="form2Example3c" />
                         <label class="form-check-label" for="form2Example3">
-                          Согласен с <a href="#!">пользовательским соглашением</a>
+                          Согласен с <a href="#">пользовательским соглашением</a>
                         </label>
                       </div>
 

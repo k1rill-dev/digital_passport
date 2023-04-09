@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -84,7 +85,7 @@
                     </div>
                     <div class="panel-body">
                         <div class="text-center" id="author">
-                            <img src="https://sun9-61.userapi.com/impg/CX3az0BwoUuAwTxWXPy3Z-ayWHW5p51r3A6hWQ/gDwvOqEADN0.jpg?size=206x210&quality=96&sign=f15b7d76db7304fdc2ea419022035f0d&type=album">
+                            <img src="{% static dict_data.picture  %}">
                             <h3>{{dict_data.first_name}} {{dict_data.last_name}}</h3>
 <!--                            <small class="label label-warning" style="margin-bottom: 90px;">Российская Федерация</small>-->
 <!--                            <p style="margin-top: 10px;"></p>-->

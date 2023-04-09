@@ -6,9 +6,10 @@ class UpdatePersonalInfoForm(forms.Form):
                                  widget=forms.TextInput(attrs={'class': 'form-control form-control-lg'}), label='Имя')
     last_name = forms.CharField(required=False, widget=forms.TextInput(attrs={'class': 'form-control form-control-lg'}),
                                 label="Фамилия")
-    password = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'form-control form-control-lg'}),
+    password = forms.CharField(required=False,
+                               widget=forms.PasswordInput(attrs={'class': 'form-control form-control-lg'}),
                                label='Пароль')
-    email = forms.EmailField(widget=forms.EmailInput(attrs={'class': 'form-control form-control-lg'}), required=False,
+    email = forms.EmailField(required=False, widget=forms.EmailInput(attrs={'class': 'form-control form-control-lg'}),
                              label='Email')
     number_of_phone = forms.IntegerField(max_value=99999999999,
                                          widget=forms.NumberInput(attrs={'class': 'form-control form-control-lg'}),
@@ -28,5 +29,7 @@ class CreateUserForm(UpdatePersonalInfoForm):
                                        label='Подтвердите пароль')
 
 
-class GetBiometriaForm(forms.Form):
-    ...
+class LoginUserForm(forms.Form):
+    email = forms.EmailField(widget=forms.EmailInput(attrs={'class': 'form-control form-control-lg'}), label='Email')
+    password = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'form-control form-control-lg'}),
+                               label='Пароль')

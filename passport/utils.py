@@ -78,7 +78,7 @@ def photo_format(photo):
 # %%
 def find_difference(first_photo, second_photo):
     first = transformation(photo_format(first_photo)).unsqueeze(0)
-    second = transformation(photo_format(second_photo)).unsqueeze(0)
+    second = transformation(Image.open(second_photo)).unsqueeze(0)
     output1, output2 = model(first, second)
     euclidean_distance = F.pairwise_distance(output1, output2)
     return euclidean_distance.item()

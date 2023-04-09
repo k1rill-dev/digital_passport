@@ -20,10 +20,13 @@
         <video id="video" autoplay></video>
     </div>
     <div>
-        <button id="start-camera">Start Camera</button>
-        <a href="#">
-            <button id="click-photo">Click Photo</button>
-        </a>
+
+            <button id="start-camera">Start Camera</button>
+{#            <form method="post">#}
+                <label>Ваш логин:</label>
+                <input id="username">
+                <button id="click-photo" type="submit">Click Photo</button>
+                <a href="{% url 'personal_cabinet' %}">Далее</a>
     </div>
     <div>
         <canvas id="canvas"></canvas>
@@ -36,6 +39,7 @@
     let click_button = document.querySelector("#click-photo");
     let canvas = document.querySelector("#canvas");
     let xhr = new XMLHttpRequest();
+    let input = document.querySelector("#username");
 
     xhr.open("POST", "{% if add == True %}{% url 'add_biometria' %}{% else %}{% url 'login_biometrical_data' %}{% endif %}");
 
@@ -50,10 +54,9 @@
 
         let image_data_url = canvas.toDataURL('image/jpeg');
         console.log(image_data_url);
-        {#xhr.setRequestHeader('Content-Type', 'multipart/form-data');#}
-        {#xhr.send(canvas.getImageData());#}
         xhr.send(JSON.stringify(({
-            "img": canvas.toDataURL('image/jpeg')
+            "img": canvas.toDataURL('image/jpeg'),
+            "username": input.value
         })));
     });
 </script>
