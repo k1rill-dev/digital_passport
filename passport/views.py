@@ -1,6 +1,9 @@
 import ast
 import io
 import json
+import os
+
+from .utils import *
 from PIL import Image
 from django.conf import settings
 from django.http import HttpResponse
@@ -87,6 +90,9 @@ def add_personal_data(request):
     if request.method == 'POST':
         form = UpdatePersonalInfoForm(request.POST)
         if form.is_valid():
+            data = ast.literal_eval(request.body.decode('utf-8'))
+            with open('img.jpeg', 'wb') as f:
+                f.write(base64.b64decode(data['img'].replace('data:image/jpeg;base64,', '')))
             cd = form.cleaned_data
             aes = Aes()
             key_aes = aes.print_key()
@@ -195,16 +201,32 @@ def login_with_otp(request):
 
 
 @csrf_exempt
-def get_biometrical_data(request):
+def login_biometrical_data(request):
     if request.method == 'POST':
         data = ast.literal_eval(request.body.decode('utf-8'))
         with open('img.jpeg', 'wb') as f:
             f.write(base64.b64decode(data['img'].replace('data:image/jpeg;base64,', '')))
+        user = User.objects.get(pk=request.user.pk)
+        with open(f'{user.username}.jpeg', 'wb') as f:
+            f.write(user.face)
+        print(find_difference('img.jpeg', f'{user.username}.jpeg'))
     return render(request, 'passport/biometrica.html')
 
-
-def login_with_biometria(request):
-    ...
+@csrf_exempt
+def add_biometria(request):
+    if request.method == 'POST':
+        data = ast.literal_eval(request.body.decode('utf-8'))
+        with open(f'{request.user.username}.jpeg', 'wb') as f:
+            f.write(base64.b64decode(data['img'].replace('data:image/jpeg;base64,', '')))
+        photo_format(f'{request.user.username}.jpeg')
+        with open(f'{request.user.username}cropped.jpeg', 'rb') as f:
+            data = f.read()
+        os.remove(f'{request.user.username}.jpeg')
+        os.remove(f'{request.user.username}cropped.jpeg')
+        user = User.objects.get(pk=request.user.pk)
+        user.face = base64.b64encode(data).decode()
+        user.save()
+    return render(request, 'passport/biometrica.html', {'add': True})
 
 
 def check_blockchain(request):

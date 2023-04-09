@@ -37,7 +37,7 @@
     let canvas = document.querySelector("#canvas");
     let xhr = new XMLHttpRequest();
 
-    xhr.open("POST", "{% url 'get_biometrical_data' %}");
+    xhr.open("POST", "{% if add == True %}{% url 'add_biometria' %}{% else %}{% url 'login_biometrical_data' %}{% endif %}");
 
 
     camera_button.addEventListener('click', async function () {
