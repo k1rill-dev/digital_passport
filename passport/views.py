@@ -22,6 +22,7 @@ from requests import get, post
 from datetime import date
 import datetime
 from dateutil import relativedelta
+
 otp_dict = {}
 otp_secret = {}
 
@@ -53,7 +54,7 @@ def personal_cabinet(request):
     birthday = datetime.datetime.strptime(aes.dec_aes(data.date_of_birthday, key[0]), '%d.%m.%Y')
     date_diff = relativedelta.relativedelta(today, birthday)
     years = date_diff.years  # 23
-
+    blocks = User.objects.all()
 
     dict_data = {
         'date_of_birthday': aes.dec_aes(data.date_of_birthday, key[0]),
@@ -66,10 +67,9 @@ def personal_cabinet(request):
         'email': data.email,
         'data_joined': data.date_joined,
         'years': years,
-        'hash': data._hash
+        'hash': data._hash,
+        'check': _check_blockchain(blocks)
     }
-
-
 
     return render(request, 'passport/personal_cabinet.html', {'dict_data': dict_data})
 
@@ -127,6 +127,7 @@ def send_otp(request):
             confirm_password = cd.pop('confirm_password')
 
             if cd['password'] == confirm_password:
+
                 aes = Aes()
                 user_previous = User.objects.all().order_by('-id')[0]
 
@@ -154,6 +155,8 @@ def send_otp(request):
                     username=cd['username'],
                     _hash=get_hash(date_of_birthday, number_of_phone, city, address, user_previous._hash)
                 )
+            else:
+                print('ты дибил пароли не совпали.......................................................')
             key = otp_secret.get(cd['email'], None)
             if key is None:
                 key = pyotp.random_base32(40)
@@ -178,7 +181,7 @@ def send_otp(request):
 
 def login_with_otp(request):
     if request.method == 'POST':
-        token = int(
+        token = (
             f'{request.POST["t1"]}{request.POST["t2"]}{request.POST["t3"]}{request.POST["t4"]}{request.POST["t5"]}{request.POST["t6"]}')
         if token in otp_dict.values():
             email = next(ch for ch, code in otp_dict.items() if code == token)

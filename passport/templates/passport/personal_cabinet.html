@@ -5,6 +5,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"/>
     <script src="https://bootstraptema.ru/plugins/jquery/jquery-1.11.3.min.js"></script>
     <script src="https://bootstraptema.ru/plugins/2015/b-v3-3-6/bootstrap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     <meta charset="UTF-8">
     <title>Title</title>
 </head>
@@ -55,7 +57,17 @@
         height: 450px;
     }
 </style>
+{% if dict_data.check.0 == False %}
 
+<script type="module">
+                Swal.fire({
+  icon: 'error',
+  title: 'БЛОК БЛОКЧЕЙНА БЫЛ ИЗМЕНЕН',
+  text: 'ИЗМЕНЕНИЯ В {{ dict_data.check.1 }}',
+})
+
+            </script>
+{% endif %}
 <div class="container">
     <div id="main">
 
@@ -85,11 +97,9 @@
                 <div class="panel">
                     <div class="panel-body">
                         <ul id="myTab" class="nav nav-pills">
-
-                            <li class="active"><a href="#detail" data-toggle="tab">О пользователе</a></li>
-                            <li class="active"><a class="active" href="{% url 'chek_blockchain' %}" data-toggle="tab" style="margin-left: 50px;">Проверить
-                                целостность цепочки блокчейна</a></li>
-
+                            <li class="active"><a href="#detail">О пользователе</a></li>
+                            <li class="active"><a href="{% url 'add_personal_data' %}" >Изменить данные</a></li>
+                            <li class="active"><a class="active" href="{% url 'logout' %}" style="margin-left: 50px;">Выйти из аккаунта</a></li>
                         </ul>
                         <div id="myTabContent" class="tab-content">
                             <hr>
@@ -141,10 +151,6 @@
 
 
                         </div><!-- /.main -->
-                    </div><!-- /.container --></div>
-            </div>
-        </div>
-    </div>
-</div>
+                    </div><!-- /.container -->
 </body>
 </html>

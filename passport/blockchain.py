@@ -14,9 +14,9 @@ def _check_blockchain(blocks):
 
         if (get_hash(currentBlock.date_of_birthday, currentBlock.number_of_phone, currentBlock.city,
                      currentBlock.address, prevBlock._hash) != currentBlock._hash):
-            return False, currentBlock
+            return [False, currentBlock]
 
-    return True
+    return [True]
 
 
 def get_hash(*args) -> str:
